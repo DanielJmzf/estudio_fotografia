@@ -1,19 +1,14 @@
 {
-  "builds": [
-    {
-      "src": "main.py",
-      "use": "@vercel/python"
+  "functions": {
+    "main.py": {
+      "runtime": "python3.12",
+      "includeFiles": "src/**|skills/**|knowledge/**|index.html"
     }
-  ],
+  },
   "routes": [
     {
       "src": "/(.*)",
       "dest": "main.py"
     }
-  ],
-  "functions": {
-    "main.py": {
-      "includeFiles": "src/**|skills/**|knowledge/**|index.html"
-    }
-  }
+  ]
 }

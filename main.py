@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -7,6 +11,8 @@ from fastapi.responses import HTMLResponse
 
 from src.domain.schemas import ChatRequest, ChatResponse
 from src.services.chat_service import ChatService
+
+load_dotenv()
 
 load_dotenv()
 

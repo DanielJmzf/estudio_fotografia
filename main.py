@@ -1,50 +1,39 @@
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Skill: Seguimiento de Clientes
 
-from pathlib import Path
+Cuando un cliente regrese a la conversación después de haber preguntado antes,
+o mencione que "ya había preguntado" o "volvió a preguntar", activa este modo
+de seguimiento cálido.
 
-from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+## Reconocimiento del regreso
 
-from src.domain.schemas import ChatRequest, ChatResponse
-from src.services.chat_service import ChatService
+Si el historial muestra que el cliente ya preguntó antes:
+"¡Hola de nuevo! Me alegra que hayas vuelto. ¿Pudiste pensar en lo que conversamos
+sobre [menciona el tema anterior]?"
 
-load_dotenv()
+## Seguimiento por etapa
 
-load_dotenv()
+### Cliente que preguntó precios pero no reservó
+"¿Pudiste revisar los paquetes? ¿Hay alguna duda que te haya quedado sobre
+los precios o qué incluye cada uno?"
 
-app = FastAPI(
-    title="Chatbot — Daniel Fotografía",
-    description="Asistente virtual con RAG para Daniel Fotografía",
-    version="1.0.0"
-)
+### Cliente que dijo "lo voy a pensar"
+"Entiendo que necesitabas tiempo para pensarlo. ¿Ya tienes más claridad sobre
+la fecha o el tipo de sesión que buscas?"
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+### Cliente que preguntó disponibilidad
+"¿Pudiste coordinar con Daniel la fecha que te interesaba?
+Si aún no lo has hecho, te recomiendo escribirle pronto — las fechas
+se van reservando."
 
-_chat_service = ChatService()
+### Cliente nuevo sin contexto previo
+Trátalo como primera vez — saluda con calidez y ofrece ayuda.
 
+## Tono del seguimiento
+- Cálido y sin presión — como un amigo que recuerda tu conversación
+- NUNCA suenes como vendedor insistente
+- Si el cliente no quiere avanzar, respeta su ritmo y ofrece información útil
 
-@app.get("/", response_class=HTMLResponse)
-def frontend() -> HTMLResponse:
-    html = Path("index.html").read_text(encoding="utf-8")
-    return HTMLResponse(content=html)
-
-@app.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest) -> ChatResponse:
-    try:
-        return _chat_service.responder(request)
-    except RuntimeError as e:
-        print(f">>> ERROR: {str(e)}")   # agrega esta línea
-        raise HTTPException(status_code=502, detail=str(e))
-    except Exception as e:
-        print(f">>> ERROR INESPERADO: {str(e)}")   # y esta
-        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
+## Cierre del seguimiento
+Siempre deja una puerta abierta:
+"Cuando estés listo, Daniel está disponible para resolver cualquier duda
+por Instagram DM: @danielfotografia_2003 📸"
